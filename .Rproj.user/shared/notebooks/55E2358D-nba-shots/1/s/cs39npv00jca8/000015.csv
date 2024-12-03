@@ -1,0 +1,6 @@
+"0","# Use the Chivo font (you must install this locally)
+font <- sysfonts::font_add(""Chivo"", ""./fonts/Chivo/Chivo-VariableFont_wght.otf"")
+"
+"2","Error in check_font_path(regular, ""regular"") : 
+  font file not found for 'regular' type
+"
