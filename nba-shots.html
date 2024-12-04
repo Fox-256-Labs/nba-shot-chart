@@ -133,7 +133,11 @@ background: #f0f3f5;
   <li><a href="#data-acquisition" id="toc-data-acquisition" class="nav-link" data-scroll-target="#data-acquisition"><span class="header-section-number">3</span> Data acquisition</a></li>
   <li><a href="#filtering-and-scaling-data" id="toc-filtering-and-scaling-data" class="nav-link" data-scroll-target="#filtering-and-scaling-data"><span class="header-section-number">4</span> Filtering and scaling data</a></li>
   <li><a href="#calculating-player-stats" id="toc-calculating-player-stats" class="nav-link" data-scroll-target="#calculating-player-stats"><span class="header-section-number">5</span> Calculating player stats</a></li>
-  <li><a href="#creating-the-visualization" id="toc-creating-the-visualization" class="nav-link" data-scroll-target="#creating-the-visualization"><span class="header-section-number">6</span> Creating the visualization</a></li>
+  <li><a href="#creating-the-visualization" id="toc-creating-the-visualization" class="nav-link" data-scroll-target="#creating-the-visualization"><span class="header-section-number">6</span> Creating the visualization</a>
+  <ul class="collapse">
+  <li><a href="#draft-outcome" id="toc-draft-outcome" class="nav-link" data-scroll-target="#draft-outcome"><span class="header-section-number">6.0.1</span> Draft Outcome</a></li>
+  </ul></li>
+  <li><a href="#final-visualization" id="toc-final-visualization" class="nav-link" data-scroll-target="#final-visualization"><span class="header-section-number">7</span> Final Visualization</a></li>
   </ul>
 </nav>
 </div>
@@ -202,12 +206,13 @@ background: #f0f3f5;
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(janitor)</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(htmltools)</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sysfonts)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Set a grey color for consistency in the visualization</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>grey <span class="ot">&lt;-</span> <span class="st">'#818990'</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Use the Chivo font (you must install this locally)</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>font <span class="ot">&lt;-</span> sysfonts<span class="sc">::</span><span class="fu">font_add</span>(<span class="st">"Chivo"</span>, <span class="st">"./fonts/Chivo/Chivo-VariableFont_wght.ttf"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Set a grey color for consistency in the visualization</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>grey <span class="ot">&lt;-</span> <span class="st">'#818990'</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Use the Chivo font (you must install this locally)</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>font <span class="ot">&lt;-</span> sysfonts<span class="sc">::</span><span class="fu">font_add</span>(<span class="st">"Chivo"</span>, <span class="st">"./fonts/Chivo/static/Chivo-Regular.ttf"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="customization-for-large-datasets" class="level1" data-number="2">
@@ -223,7 +228,7 @@ background: #f0f3f5;
 <h1 data-number="3"><span class="header-section-number">3</span> Data acquisition</h1>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get shot data for specific teams in the 2022-23 season</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>shots <span class="ot">&lt;-</span> nbastatR<span class="sc">::</span><span class="fu">teams_shots</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>shots <span class="ot">&lt;-</span> <span class="fu">teams_shots</span>(</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">team_ids =</span> <span class="fu">c</span>(<span class="st">'1610612744'</span>, <span class="st">'1610612747'</span>, <span class="st">'1610612755'</span>, <span class="st">'1610612742'</span>, <span class="st">'1610612760'</span>, <span class="st">'1610612757'</span>),</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">seasons =</span> <span class="dv">2023</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -291,7 +296,7 @@ Oklahoma City Thunder 2022-23 shot data</code></pre>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Group data by player and event type, then calculate stats</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>player_stats <span class="ot">&lt;-</span> shots_player <span class="sc">|&gt;</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(namePlayer, nameTeam, typeEvent) <span class="sc">|&gt;</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">total_shots =</span> <span class="fu">n</span>(), <span class="at">.groups =</span> <span class="st">'drop'</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_shots =</span> <span class="fu">n</span>(), <span class="at">.groups =</span> <span class="st">'drop'</span>) <span class="sc">|&gt;</span></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> typeEvent, <span class="at">values_from =</span> total_shots, <span class="at">values_fill =</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span></span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">total =</span> made_shot <span class="sc">+</span> missed_shot,</span>
@@ -312,92 +317,234 @@ Oklahoma City Thunder 2022-23 shot data</code></pre>
 <section id="creating-the-visualization" class="level1 page-columns page-full" data-number="6">
 <h1 data-number="6"><span class="header-section-number">6</span> Creating the visualization</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># custom data frame with images (from espn) and labels to pass into ggtext</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>images <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">namePlayer =</span> <span class="fu">c</span>(<span class="st">"Joel Embiid"</span>,<span class="st">"Luka Dončić"</span>,<span class="st">"LeBron James"</span>,<span class="st">"Stephen Curry"</span>,<span class="st">"Damian Lillard"</span>,<span class="st">"Shai Gilgeous-Alexander"</span>),</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"Joel Embiid"</span>,<span class="st">"Luka Dončić"</span>,<span class="st">"LeBron James"</span>,<span class="st">"Stephen Curry"</span>,<span class="st">"Damian Lillard"</span>,<span class="st">"Shai G-Alexander"</span>),</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">image =</span> <span class="fu">c</span>(<span class="st">"https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/3059318.png"</span>,</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">"https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/3945274.png"</span>,</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">"https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/1966.png"</span>,</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>            <span class="st">"https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/3975.png"</span>,</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">"https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/6606.png"</span>,</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">"https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/4278073.png"</span>)</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>)<span class="sc">|&gt;</span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(player_stats, <span class="at">by=</span><span class="fu">c</span>(<span class="st">"namePlayer"</span><span class="ot">=</span><span class="st">"name_player"</span>))<span class="sc">|&gt;</span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(df_dict_nba_teams<span class="sc">|&gt;</span><span class="fu">select</span>(nameTeam,slugTeam), <span class="at">by=</span><span class="fu">c</span>(<span class="st">"name_team"</span><span class="ot">=</span><span class="st">"nameTeam"</span>))<span class="sc">|&gt;</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">text_label =</span> <span class="fu">glue</span>(<span class="st">"&lt;span style='font-size:14px;'&gt;**{toupper(label)}**&lt;/span&gt;&lt;br&gt;&lt;span style='font-size:12.5px;color:grey40;'&gt;{slugTeam} · {total} shots · &lt;/span&gt;&lt;span style='color:#ED254E;font-size:12.5px;'&gt;{round(accuracy,0)}% made&lt;/span&gt;"</span>))</span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co"># circle crop images</span></span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>images<span class="sc">$</span>cropped <span class="ot">&lt;-</span> cropcircles<span class="sc">::</span><span class="fu">circle_crop</span>(<span class="at">images=</span>images<span class="sc">$</span>image, <span class="at">border_size =</span> <span class="dv">1</span>, <span class="at">border_colour =</span> <span class="st">"whitesmoke"</span>)</span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="co"># factor players by accuracy</span></span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>shots_player<span class="sc">$</span>namePlayer <span class="ot">&lt;-</span> <span class="fu">factor</span>(shots_player<span class="sc">$</span>namePlayer, <span class="at">levels =</span> player_stats<span class="sc">$</span>name_player)</span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>images<span class="sc">$</span>namePlayer <span class="ot">&lt;-</span> <span class="fu">factor</span>(images<span class="sc">$</span>namePlayer, <span class="at">levels =</span> player_stats<span class="sc">$</span>name_player)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Data frame with player images and labels</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>images <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">namePlayer =</span> <span class="fu">c</span>(<span class="st">"Joel Embiid"</span>, <span class="st">"Luka Dončić"</span>, <span class="st">"LeBron James"</span>, <span class="st">"Stephen Curry"</span>, </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"Damian Lillard"</span>, <span class="st">"Shai Gilgeous-Alexander"</span>),</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"Joel Embiid"</span>, <span class="st">"Luka Dončić"</span>, <span class="st">"LeBron James"</span>, <span class="st">"Stephen Curry"</span>, </span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Damian Lillard"</span>, <span class="st">"Shai G-Alexander"</span>),</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">image =</span> <span class="fu">c</span>(<span class="st">"https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/3059318.png"</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">"https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/3945274.png"</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>            <span class="st">"https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/1966.png"</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">"https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/3975.png"</span>,</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">"https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/6606.png"</span>,</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>            <span class="st">"https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/4278073.png"</span>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(player_stats, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"namePlayer"</span> <span class="ot">=</span> <span class="st">"name_player"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(df_dict_nba_teams<span class="sc">|&gt;</span><span class="fu">select</span>(nameTeam,slugTeam), <span class="at">by=</span><span class="fu">c</span>(<span class="st">"name_team"</span><span class="ot">=</span><span class="st">"nameTeam"</span>))<span class="sc">|&gt;</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">text_label =</span> <span class="fu">glue</span>(<span class="st">"&lt;span style='font-size:14px;'&gt;**{toupper(label)}**&lt;/span&gt;&lt;br&gt;&lt;span style='font-size:12.5px;color:grey40;'&gt;{slugTeam} · {total} shots · &lt;/span&gt;&lt;span style='color:#ED254E;font-size:12.5px;'&gt;{round(accuracy,0)}% made&lt;/span&gt;"</span>)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Circle crop player images</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>images<span class="sc">$</span>cropped <span class="ot">&lt;-</span> cropcircles<span class="sc">::</span><span class="fu">circle_crop</span>(</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">images =</span> images<span class="sc">$</span>image, <span class="at">border_size =</span> <span class="dv">1</span>, <span class="at">border_colour =</span> <span class="st">"whitesmoke"</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="co"># factor players by accuracy</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>shots_player<span class="sc">$</span>namePlayer<span class="ot">&lt;-</span><span class="fu">factor</span>(shots_player<span class="sc">$</span>namePlayer, <span class="at">levels =</span> player_stats<span class="sc">$</span>name_player)</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>images<span class="sc">$</span>namePlayer<span class="ot">&lt;-</span><span class="fu">factor</span>(images<span class="sc">$</span>namePlayer, <span class="at">levels =</span> player_stats<span class="sc">$</span>name_player)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>….</p>
+<p>The step above involves creating a data frame (<code>images</code>) that contains:</p>
+<ol type="1">
+<li><p><strong>Player Names</strong>: Matches the names in the dataset for proper merging.</p></li>
+<li><p><strong>Labels</strong>: Formatted player names to be displayed on the chart.</p></li>
+<li><p><strong>Images</strong>: URLs of player headshots (fetched from ESPN).</p></li>
+<li><p><strong>Stats</strong>: Total shots and shooting accuracy calculated earlier.</p></li>
+</ol>
+<p>We merge this information with the player stats (<code>player_stats</code>) to add the shooting statistics, and then use <code>cropcircles</code> to crop the images into circles for aesthetic purposes.</p>
+<section id="key-points" class="level4" data-number="6.0.0.1">
+<h4 data-number="6.0.0.1" class="anchored" data-anchor-id="key-points"><span class="header-section-number">6.0.0.1</span> Key Points</h4>
+<ul>
+<li><p><strong><code>left_join</code></strong>: Combines the player stats with the image data using the player names as the key.</p></li>
+<li><p><strong><code>glue</code></strong>: Formats the text labels to include player names, total shots, and accuracy in HTML for styling.</p></li>
+<li><p><strong><code>cropcircles::circle_crop</code></strong>: Crops the player images into circular shapes and adds a border.</p></li>
+</ul>
+</section>
+<section id="result" class="level4" data-number="6.0.0.2">
+<h4 data-number="6.0.0.2" class="anchored" data-anchor-id="result"><span class="header-section-number">6.0.0.2</span> Result</h4>
+<p>The <code>images</code> data frame now contains:</p>
+<ul>
+<li><p>Player names.</p></li>
+<li><p>Circular headshots.</p></li>
+<li><p>Custom HTML text labels for each player.</p></li>
+</ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#add court drawings</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>BasketballAnalyzeR<span class="sc">::</span><span class="fu">drawNBAcourt</span>(<span class="fu">ggplot</span>(<span class="at">data=</span>shots_player), </span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">size=</span><span class="fl">0.5</span>, <span class="at">col=</span><span class="st">"grey20"</span>)<span class="sc">+</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">#shot data</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_point</span>(<span class="at">data=</span>shots_player,</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>x,<span class="at">y=</span>y, <span class="at">fill=</span>typeEvent),</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">shape=</span><span class="dv">21</span>, <span class="at">color=</span><span class="st">"white"</span>, <span class="at">size=</span><span class="fl">2.5</span>, <span class="at">alpha=</span><span class="fl">0.8</span>)<span class="sc">+</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">#backdrop image with fill to create border</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_image</span>(<span class="at">data=</span>images, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span><span class="sc">-</span><span class="dv">20</span>, <span class="at">y=</span><span class="dv">6</span>, <span class="at">image=</span>cropped), <span class="at">color=</span><span class="st">"#818990"</span>, <span class="at">size=</span><span class="fl">0.16</span>, <span class="at">asp=</span><span class="dv">1</span><span class="sc">/</span><span class="fl">1.2</span>)<span class="sc">+</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="co">#player image</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_image</span>(<span class="at">data=</span>images, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span><span class="sc">-</span><span class="dv">20</span>, <span class="at">y=</span><span class="dv">6</span>, <span class="at">image=</span>cropped), <span class="at">size=</span><span class="fl">0.15</span>, <span class="at">asp=</span><span class="dv">1</span><span class="sc">/</span><span class="fl">1.2</span>)<span class="sc">+</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="co">#text per player with name, team, and stats</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  ggtext<span class="sc">::</span><span class="fu">geom_textbox</span>(<span class="at">data=</span>images, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span><span class="dv">5</span>, <span class="at">y=</span><span class="dv">6</span>, <span class="at">label=</span>text_label), </span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>                        <span class="at">fill=</span><span class="cn">NA</span>, <span class="at">box.size=</span><span class="cn">NA</span> </span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>                        ) <span class="sc">+</span></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values=</span><span class="fu">rev</span>(<span class="fu">c</span>(<span class="st">"grey70"</span>,<span class="st">"#ED254E"</span>)))<span class="sc">+</span></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand=</span><span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.2</span>))<span class="sc">+</span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>namePlayer, <span class="at">ncol=</span><span class="dv">3</span>)<span class="sc">+</span></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>()<span class="sc">+</span></span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="fu">guide_legend</span>(<span class="at">override.aes=</span><span class="fu">list</span>(<span class="at">size=</span><span class="dv">5</span>)))<span class="sc">+</span></span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>( <span class="at">fill=</span><span class="st">"Type"</span>,</span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">title=</span><span class="st">"NBA Player Shot Chart"</span>, </span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"2022-23 Regular Season"</span></span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>       )<span class="sc">+</span></span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>,</span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">face=</span><span class="st">"bold"</span>, <span class="at">size=</span><span class="dv">12</span>),</span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="at">t=</span><span class="dv">20</span>),</span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">12</span>),</span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.margin =</span> <span class="fu">margin</span>(<span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">4</span>)),</span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>        <span class="at">strip.text =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>        <span class="at">strip.background =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.key =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.justification =</span> <span class="st">"left"</span>,</span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>        <span class="co">#text = element_text(family=font),</span></span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face=</span><span class="st">"bold"</span>, <span class="at">size=</span><span class="dv">18</span>),</span>
-<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">color=</span><span class="st">"#818990"</span>, <span class="at">size=</span><span class="dv">16</span>, <span class="at">margin=</span><span class="fu">margin</span>(<span class="at">b=</span><span class="dv">5</span>)),</span>
-<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor=</span><span class="fu">element_blank</span>(),</span>
-<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.caption =</span> <span class="fu">element_textbox_simple</span>(<span class="at">hjust=</span><span class="fl">0.01</span>, <span class="at">color=</span><span class="st">"#818990"</span>, <span class="at">margin=</span><span class="fu">margin</span>(<span class="at">b=</span><span class="dv">10</span>), <span class="at">size=</span><span class="dv">10</span>),</span>
-<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>       <span class="co"># panel.grid.major = element_line(color="grey90", linewidth=0.3),</span></span>
-<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title=</span><span class="fu">element_blank</span>(),</span>
-<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating the short chart visualization</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>shot_chart_draft <span class="ot">&lt;-</span> </span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># draws the NBA half court</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  BasketballAnalyzeR<span class="sc">::</span><span class="fu">drawNBAcourt</span>(</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">data =</span> shots_player), <span class="at">size =</span> <span class="fl">0.5</span>, <span class="at">col =</span> <span class="st">"grey20"</span>) <span class="sc">+</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># shot data</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">fill =</span> typeEvent), <span class="at">shape =</span> <span class="dv">21</span>, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">size =</span> <span class="fl">2.5</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span> </span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># backdrop image with fill to create border</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_image</span>(<span class="at">data=</span>images, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span><span class="sc">-</span><span class="dv">20</span>, <span class="at">y=</span><span class="dv">6</span>, <span class="at">image=</span>cropped), <span class="at">color=</span><span class="st">"#818990"</span>, <span class="at">size=</span><span class="fl">0.16</span>, <span class="at">asp=</span><span class="dv">1</span><span class="sc">/</span><span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># player image</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_image</span>(<span class="at">data =</span> images, <span class="fu">aes</span>(<span class="at">x =</span> <span class="sc">-</span><span class="dv">20</span>, <span class="at">y =</span> <span class="dv">6</span>, <span class="at">image =</span> cropped), <span class="at">size =</span> <span class="fl">0.15</span>, <span class="at">asp =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># text per player with name, team, and stats</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  ggtext<span class="sc">::</span><span class="fu">geom_textbox</span>(<span class="at">data =</span> images, <span class="fu">aes</span>(<span class="at">x =</span> <span class="dv">5</span>, <span class="at">y =</span> <span class="dv">6</span>, <span class="at">label =</span> text_label), </span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>                       <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">box.size =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create your own discrete scale</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values=</span><span class="fu">rev</span>(<span class="fu">c</span>(<span class="st">"grey70"</span>,<span class="st">"#ED254E"</span>))) <span class="sc">+</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># For position scales, a vector of range expansion constants used to add some padding around the data to ensure that they are placed some distance away from the axes</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand=</span><span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.2</span>)) <span class="sc">+</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># create small multiple chart for each player across 3 columns</span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> namePlayer, <span class="at">ncol =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Cartesian coordinates with fixed "aspect ratio"</span></span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Set guides for each scale</span></span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="fu">guide_legend</span>(<span class="at">override.aes=</span><span class="fu">list</span>(<span class="at">size=</span><span class="dv">5</span>))) <span class="sc">+</span></span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Type"</span>,</span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"NBA Player Shot Chart"</span>,</span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"2022-23 Regular Season"</span></span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The basketball court layout is added using <code>BasketballAnalyzeR::drawNBAcourt</code>. It ensures the shot locations are overlaid on a realistic court design.</p>
+</section>
+<section id="key-points-1" class="level4" data-number="6.0.0.3">
+<h4 data-number="6.0.0.3" class="anchored" data-anchor-id="key-points-1"><span class="header-section-number">6.0.0.3</span> Key Points</h4>
+<ul>
+<li><p><strong>Customization</strong>: The court is drawn with specific line thickness (<code>size</code>) and color (<code>col</code>).</p></li>
+<li><p><strong>Integration with ggplot</strong>: The court acts as the base layer of the visualization.</p></li>
+</ul>
+<p>Then, all elements (shots, player images, labels, and court) are combined into a cohesive plot.</p>
+</section>
+<section id="plotting-the-shots" class="level4" data-number="6.0.0.4">
+<h4 data-number="6.0.0.4" class="anchored" data-anchor-id="plotting-the-shots"><span class="header-section-number">6.0.0.4</span> 1. <strong>Plotting the Shots</strong></h4>
+<ul>
+<li><p><strong><code>geom_point</code></strong>: Adds points for made and missed shots.</p>
+<ul>
+<li><p>Red (<code>#ED254E</code>) for made shots.</p></li>
+<li><p>Grey (<code>grey70</code>) for missed shots.</p></li>
+</ul></li>
+<li><p><strong>Customizations</strong>:</p>
+<ul>
+<li><p><code>shape = 21</code> ensures points are circular with a white outline.</p></li>
+<li><p><code>size</code> and <code>alpha</code> control the size and transparency.</p></li>
+</ul></li>
+</ul>
+</section>
+<section id="player-images" class="level4" data-number="6.0.0.5">
+<h4 data-number="6.0.0.5" class="anchored" data-anchor-id="player-images"><span class="header-section-number">6.0.0.5</span> 2. <strong>Player Images</strong></h4>
+<ul>
+<li><strong><code>geom_image</code></strong>: Adds player headshots to the chart.</li>
+</ul>
+</section>
+<section id="player-labels" class="level4" data-number="6.0.0.6">
+<h4 data-number="6.0.0.6" class="anchored" data-anchor-id="player-labels"><span class="header-section-number">6.0.0.6</span> 3. <strong>Player Labels</strong></h4>
+<ul>
+<li><p><strong><code>ggtext::geom_textbox</code></strong>: Adds formatted text labels (player name, team, total shots, and accuracy).</p>
+<ul>
+<li><strong>HTML Support</strong>: Enables the use of styled text (e.g., bold player names, red accuracy stats).</li>
+</ul></li>
+</ul>
+</section>
+<section id="faceting" class="level4" data-number="6.0.0.7">
+<h4 data-number="6.0.0.7" class="anchored" data-anchor-id="faceting"><span class="header-section-number">6.0.0.7</span> 4. <strong>Faceting</strong></h4>
+<ul>
+<li><strong><code>facet_wrap</code></strong>: Creates separate panels for each player, arranged in three columns.</li>
+</ul>
+</section>
+<section id="scales-and-legends" class="level4" data-number="6.0.0.8">
+<h4 data-number="6.0.0.8" class="anchored" data-anchor-id="scales-and-legends"><span class="header-section-number">6.0.0.8</span> 5. <strong>Scales and Legends</strong></h4>
+<ul>
+<li><p><strong><code>scale_fill_manual</code></strong>: Manually assigns colors to made and missed shots.</p></li>
+<li><p><strong>Legend</strong>:</p>
+<ul>
+<li><p>Positioned at the top.</p></li>
+<li><p>Customized size and styling.</p></li>
+</ul></li>
+</ul>
+</section>
+<section id="titles-and-captions" class="level4" data-number="6.0.0.9">
+<h4 data-number="6.0.0.9" class="anchored" data-anchor-id="titles-and-captions"><span class="header-section-number">6.0.0.9</span> 6. <strong>Titles and Captions</strong></h4>
+<ul>
+<li><strong><code>labs</code></strong>: Adds a title, subtitle, and the HTML-formatted caption.</li>
+</ul>
+</section>
+<section id="theme-customization" class="level4" data-number="6.0.0.10">
+<h4 data-number="6.0.0.10" class="anchored" data-anchor-id="theme-customization"><span class="header-section-number">6.0.0.10</span> 7. <strong>Theme Customization</strong></h4>
+<ul>
+<li><p><strong>Background</strong>: Removes unnecessary elements (e.g., gridlines, axis text).</p></li>
+<li><p><strong>Panel Layout</strong>: Ensures a clean, minimalistic appearance.</p></li>
+</ul>
+</section>
+<section id="draft-outcome" class="level3 page-columns page-full" data-number="6.0.1">
+<h3 data-number="6.0.1" class="anchored" data-anchor-id="draft-outcome"><span class="header-section-number">6.0.1</span> Draft Outcome</h3>
+<ul>
+<li><p>The chart displays:</p>
+<ul>
+<li><p>Shot charts for six players.</p></li>
+<li><p>Circular player headshots and formatted labels</p></li>
+</ul></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#save</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"nba-shots-draft.png"</span>, <span class="at">bg=</span><span class="st">"white"</span> , <span class="at">height=</span><span class="dv">9</span>, <span class="at">width=</span><span class="dv">12</span>, <span class="at">units=</span><span class="st">"in"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="quarto-figure quarto-figure-center page-columns page-full">
+<figure class="figure page-columns page-full">
+<p><img src="nba-shots-draft.png" class="img-fluid figure-img"></p>
+<figcaption class="margin-caption">Draft output image</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="final-visualization" class="level1 page-columns page-full" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Final Visualization</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Making more adjustments to the draft visualization by making adjustments to the theme</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>shot_chart_draft <span class="sc">+</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>, <span class="co"># move the legend to the top</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">face=</span><span class="st">"bold"</span>, <span class="at">size=</span><span class="dv">12</span>), <span class="co"># make the title bold and increase the size</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="at">t=</span><span class="dv">20</span>), <span class="co">#increases the Top margin of the plot by 20</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">12</span>), <span class="co">#inceases size of text </span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.margin =</span> <span class="fu">margin</span>(<span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">4</span>)),<span class="co"># Adjusting legend margin</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">strip.text =</span> <span class="fu">element_blank</span>(), <span class="co"># Remove text that appears in facets</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">strip.background =</span> <span class="fu">element_blank</span>(),<span class="co"># Remove background that appears in facets</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.key =</span> <span class="fu">element_blank</span>(), <span class="co"># Remove default legend key</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="co"># Remove default axit text</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.justification =</span> <span class="st">"left"</span>, <span class="co"># Move legend to the left</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_blank</span>(),<span class="co"># Remove panel background</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face=</span><span class="st">"bold"</span>, <span class="at">size=</span><span class="dv">18</span>), <span class="co"># make the plot title bold and increase the size</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">color=</span><span class="st">"#818990"</span>, <span class="at">size=</span><span class="dv">16</span>, <span class="at">margin=</span><span class="fu">margin</span>(<span class="at">b=</span><span class="dv">5</span>)),</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor=</span><span class="fu">element_blank</span>(),<span class="co"># Remove panel grid minor</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.caption =</span> <span class="fu">element_textbox_simple</span>(<span class="at">hjust=</span><span class="fl">0.01</span>, <span class="at">color=</span><span class="st">"#818990"</span>, <span class="at">margin=</span><span class="fu">margin</span>(<span class="at">b=</span><span class="dv">10</span>), <span class="at">size=</span><span class="dv">10</span>),</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>       <span class="co"># panel.grid.major = element_line(color="grey90", linewidth=0.3),</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title=</span><span class="fu">element_blank</span>(), <span class="co"># Remove axis titles</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>())<span class="co"># Remove axis ticks</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="nba-shots_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="nba-shots_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>…</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#save</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ggsave("nba-shots-final.png", bg="white" , height=9, width=12, units="in")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#save</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"nba-shots-final.png"</span>, <span class="at">bg=</span><span class="st">"white"</span> , <span class="at">height=</span><span class="dv">9</span>, <span class="at">width=</span><span class="dv">12</span>, <span class="at">units=</span><span class="st">"in"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="quarto-figure quarto-figure-center page-columns page-full">
 <figure class="figure page-columns page-full">
 <p><img src="nba-shots-final.png" class="img-fluid figure-img"></p>
-<figcaption class="margin-caption">Final output image</figcaption>
+<figcaption class="margin-caption">Final output</figcaption>
 </figure>
 </div>
 </section>

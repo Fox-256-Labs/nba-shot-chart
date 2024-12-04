@@ -74,12 +74,13 @@ library(glue)
 library(janitor)
 library(htmltools)
 library(sysfonts)
+library(plotly)
 
 # Set a grey color for consistency in the visualization
 grey <- '#818990'
 
 # Use the Chivo font (you must install this locally)
-font <- sysfonts::font_add("Chivo", "./fonts/Chivo/Chivo-VariableFont_wght.ttf")
+font <- sysfonts::font_add("Chivo", "./fonts/Chivo/static/Chivo-Regular.ttf")
 
 
 ```
@@ -95,13 +96,13 @@ Sys.setenv(VROOM_CONNECTION_SIZE = 500072)
 
 **Environment Settings**: Ensures a large enough connection buffer to handle the data.
 
-# Data acquisition 
+# Data acquisition
 
 ```{r warning=FALSE, message=FALSE}
 
 
 # Get shot data for specific teams in the 2022-23 season
-shots <- nbastatR::teams_shots(
+shots <- teams_shots(
   team_ids = c('1610612744', '1610612747', '1610612755', '1610612742', '1610612760', '1610612757'),
   seasons = 2023
 )
@@ -146,12 +147,12 @@ shots_player <- shots |>
 
 Calculate each player's shooting performance (made vs. missed shots).
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 
 # Group data by player and event type, then calculate stats
 player_stats <- shots_player |>
   group_by(namePlayer, nameTeam, typeEvent) |>
-  summarize(total_shots = n(), .groups = 'drop') |>
+  summarise(total_shots = n(), .groups = 'drop') |>
   pivot_wider(names_from = typeEvent, values_from = total_shots, values_fill = 0) |>
   janitor::clean_names() |>
   mutate(total = made_shot + missed_shot,
@@ -175,88 +176,218 @@ player_stats <- shots_player |>
 
 ```{r}
 
-# custom data frame with images (from espn) and labels to pass into ggtext
-
+# Data frame with player images and labels
 images <- data.frame(
-  namePlayer = c("Joel Embiid","Luka Dončić","LeBron James","Stephen Curry","Damian Lillard","Shai Gilgeous-Alexander"),
-  label = c("Joel Embiid","Luka Dončić","LeBron James","Stephen Curry","Damian Lillard","Shai G-Alexander"),
+  namePlayer = c("Joel Embiid", "Luka Dončić", "LeBron James", "Stephen Curry", 
+                 "Damian Lillard", "Shai Gilgeous-Alexander"),
+  label = c("Joel Embiid", "Luka Dončić", "LeBron James", "Stephen Curry", 
+            "Damian Lillard", "Shai G-Alexander"),
   image = c("https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/3059318.png",
             "https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/3945274.png",
             "https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/1966.png",
             "https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/3975.png",
             "https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/6606.png",
             "https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/4278073.png")
-)|>
-  left_join(player_stats, by=c("namePlayer"="name_player"))|>
+) |>
+  left_join(player_stats, by = c("namePlayer" = "name_player")) |>
   left_join(df_dict_nba_teams|>select(nameTeam,slugTeam), by=c("name_team"="nameTeam"))|>
-  mutate(text_label = glue("<span style='font-size:14px;'>**{toupper(label)}**</span><br><span style='font-size:12.5px;color:grey40;'>{slugTeam} · {total} shots · </span><span style='color:#ED254E;font-size:12.5px;'>{round(accuracy,0)}% made</span>"))
+  mutate(text_label = glue("<span style='font-size:14px;'>**{toupper(label)}**</span><br><span style='font-size:12.5px;color:grey40;'>{slugTeam} · {total} shots · </span><span style='color:#ED254E;font-size:12.5px;'>{round(accuracy,0)}% made</span>")
+  )
 
-# circle crop images
-images$cropped <- cropcircles::circle_crop(images=images$image, border_size = 1, border_colour = "whitesmoke")
+# Circle crop player images
+images$cropped <- cropcircles::circle_crop(
+  images = images$image, border_size = 1, border_colour = "whitesmoke"
+)
 
 # factor players by accuracy
-shots_player$namePlayer <- factor(shots_player$namePlayer, levels = player_stats$name_player)
+shots_player$namePlayer<-factor(shots_player$namePlayer, levels = player_stats$name_player)
 
-images$namePlayer <- factor(images$namePlayer, levels = player_stats$name_player)
+images$namePlayer<-factor(images$namePlayer, levels = player_stats$name_player)
 
 
 
 ```
 
-....
+The step above involves creating a data frame (`images`) that contains:
+
+1.  **Player Names**: Matches the names in the dataset for proper merging.
+
+2.  **Labels**: Formatted player names to be displayed on the chart.
+
+3.  **Images**: URLs of player headshots (fetched from ESPN).
+
+4.  **Stats**: Total shots and shooting accuracy calculated earlier.
+
+We merge this information with the player stats (`player_stats`) to add the shooting statistics, and then use `cropcircles` to crop the images into circles for aesthetic purposes.
+
+#### Key Points
+
+-   **`left_join`**: Combines the player stats with the image data using the player names as the key.
+
+-   **`glue`**: Formats the text labels to include player names, total shots, and accuracy in HTML for styling.
+
+-   **`cropcircles::circle_crop`**: Crops the player images into circular shapes and adds a border.
+
+#### Result
+
+The `images` data frame now contains:
+
+-   Player names.
+
+-   Circular headshots.
+
+-   Custom HTML text labels for each player.
 
 ```{r}
 
-#add court drawings
-BasketballAnalyzeR::drawNBAcourt(ggplot(data=shots_player), 
-                                 size=0.5, col="grey20")+
-  #shot data
-   geom_point(data=shots_player,
-              mapping=aes(x=x,y=y, fill=typeEvent),
-              shape=21, color="white", size=2.5, alpha=0.8)+
-  #backdrop image with fill to create border
-  geom_image(data=images, mapping=aes(x=-20, y=6, image=cropped), color="#818990", size=0.16, asp=1/1.2)+
-  #player image
-  geom_image(data=images, mapping=aes(x=-20, y=6, image=cropped), size=0.15, asp=1/1.2)+
-  #text per player with name, team, and stats
-  ggtext::geom_textbox(data=images, mapping=aes(x=5, y=6, label=text_label), 
-                        fill=NA, box.size=NA 
-                        ) +
-  scale_fill_manual(values=rev(c("grey70","#ED254E")))+
-  scale_y_continuous(expand=c(0.1,0.2))+
-  facet_wrap(~namePlayer, ncol=3)+
-  coord_equal()+
-  guides(fill = guide_legend(override.aes=list(size=5)))+
-  labs( fill="Type",
-        title="NBA Player Shot Chart", 
-       subtitle = "2022-23 Regular Season"
-       )+
-  theme(legend.position = "top",
-        legend.title = element_text(face="bold", size=12),
-        plot.margin = margin(t=20),
-        legend.text = element_text(size=12),
-        legend.margin = margin(rep(0,4)),
-        strip.text = element_blank(),
-        strip.background = element_blank(),
-        legend.key = element_blank(),
-        axis.text = element_blank(),
-        legend.justification = "left",
-        #text = element_text(family=font),
-        panel.background = element_blank(),
-        plot.title = element_text(face="bold", size=18),
-        plot.subtitle = element_text(color="#818990", size=16, margin=margin(b=5)),
-        panel.grid.minor=element_blank(),
-        plot.caption = element_textbox_simple(hjust=0.01, color="#818990", margin=margin(b=10), size=10),
-       # panel.grid.major = element_line(color="grey90", linewidth=0.3),
-        axis.title=element_blank(),
-        axis.ticks = element_blank())
+# Creating the short chart visualization
+
+shot_chart_draft <- 
+  # draws the NBA half court
+  BasketballAnalyzeR::drawNBAcourt(
+  ggplot(data = shots_player), size = 0.5, col = "grey20") +
+  
+  # shot data
+  geom_point(aes(x = x, y = y, fill = typeEvent), shape = 21, color = "white", size = 2.5, alpha = 0.8) + 
+  
+  # backdrop image with fill to create border
+  geom_image(data=images, mapping=aes(x=-20, y=6, image=cropped), color="#818990", size=0.16, asp=1/1.2) +
+  
+  # player image
+  geom_image(data = images, aes(x = -20, y = 6, image = cropped), size = 0.15, asp = 1 / 1.2) +
+  
+  # text per player with name, team, and stats
+  
+  ggtext::geom_textbox(data = images, aes(x = 5, y = 6, label = text_label), 
+                       fill = NA, box.size = NA) +
+  
+  # Create your own discrete scale
+  scale_fill_manual(values=rev(c("grey70","#ED254E"))) +
+  
+  # For position scales, a vector of range expansion constants used to add some padding around the data to ensure that they are placed some distance away from the axes
+  
+  scale_y_continuous(expand=c(0.1,0.2)) +
+  
+  # create small multiple chart for each player across 3 columns
+  
+  facet_wrap(~ namePlayer, ncol = 3) +
+  
+  # Cartesian coordinates with fixed "aspect ratio"
+  coord_equal() +
+  
+  # Set guides for each scale
+  guides(fill = guide_legend(override.aes=list(size=5))) +
+  
+  labs(
+    fill = "Type",
+    title = "NBA Player Shot Chart",
+    subtitle = "2022-23 Regular Season"
+  )
+
 ```
 
-...
+The basketball court layout is added using `BasketballAnalyzeR::drawNBAcourt`. It ensures the shot locations are overlaid on a realistic court design.
+
+#### Key Points
+
+-   **Customization**: The court is drawn with specific line thickness (`size`) and color (`col`).
+
+-   **Integration with ggplot**: The court acts as the base layer of the visualization.
+
+Then, all elements (shots, player images, labels, and court) are combined into a cohesive plot.
+
+#### 1. **Plotting the Shots**
+
+-   **`geom_point`**: Adds points for made and missed shots.
+
+    -   Red (`#ED254E`) for made shots.
+
+    -   Grey (`grey70`) for missed shots.
+
+-   **Customizations**:
+
+    -   `shape = 21` ensures points are circular with a white outline.
+
+    -   `size` and `alpha` control the size and transparency.
+
+#### 2. **Player Images**
+
+-   **`geom_image`**: Adds player headshots to the chart.
+
+#### 3. **Player Labels**
+
+-   **`ggtext::geom_textbox`**: Adds formatted text labels (player name, team, total shots, and accuracy).
+
+    -   **HTML Support**: Enables the use of styled text (e.g., bold player names, red accuracy stats).
+
+#### 4. **Faceting**
+
+-   **`facet_wrap`**: Creates separate panels for each player, arranged in three columns.
+
+#### 5. **Scales and Legends**
+
+-   **`scale_fill_manual`**: Manually assigns colors to made and missed shots.
+
+-   **Legend**:
+
+    -   Positioned at the top.
+
+    -   Customized size and styling.
+
+#### 6. **Titles and Captions**
+
+-   **`labs`**: Adds a title, subtitle, and the HTML-formatted caption.
+
+#### 7. **Theme Customization**
+
+-   **Background**: Removes unnecessary elements (e.g., gridlines, axis text).
+
+-   **Panel Layout**: Ensures a clean, minimalistic appearance.
+
+### Draft Outcome
+
+-   The chart displays:
+
+    -   Shot charts for six players.
+
+    -   Circular player headshots and formatted labels
 
 ```{r}
 #save
-# ggsave("nba-shots-final.png", bg="white" , height=9, width=12, units="in")
+ggsave("nba-shots-draft.png", bg="white" , height=9, width=12, units="in")
 ```
 
-![Final output image](nba-shots-final.png)
+![Draft output image](nba-shots-draft.png)
+
+# Final Visualization
+
+```{r}
+# Making more adjustments to the draft visualization by making adjustments to the theme
+
+shot_chart_draft +
+  theme(legend.position = "top", # move the legend to the top
+        legend.title = element_text(face="bold", size=12), # make the title bold and increase the size
+        plot.margin = margin(t=20), #increases the Top margin of the plot by 20
+        legend.text = element_text(size=12), #inceases size of text 
+        legend.margin = margin(rep(0,4)),# Adjusting legend margin
+        strip.text = element_blank(), # Remove text that appears in facets
+        strip.background = element_blank(),# Remove background that appears in facets
+        legend.key = element_blank(), # Remove default legend key
+        axis.text = element_blank(), # Remove default axit text
+        legend.justification = "left", # Move legend to the left
+        panel.background = element_blank(),# Remove panel background
+        plot.title = element_text(face="bold", size=18), # make the plot title bold and increase the size
+        plot.subtitle = element_text(color="#818990", size=16, margin=margin(b=5)),
+        panel.grid.minor=element_blank(),# Remove panel grid minor
+        plot.caption = element_textbox_simple(hjust=0.01, color="#818990", margin=margin(b=10), size=10),
+       # panel.grid.major = element_line(color="grey90", linewidth=0.3),
+        axis.title=element_blank(), # Remove axis titles
+        axis.ticks = element_blank())# Remove axis ticks
+```
+
+```{r}
+#save
+ggsave("nba-shots-final.png", bg="white" , height=9, width=12, units="in")
+```
+
+![Final output](nba-shots-final.png)
