@@ -102,12 +102,20 @@ Sys.setenv(VROOM_CONNECTION_SIZE = 500072)
 
 
 # Get shot data for specific teams in the 2022-23 season
-shots <- teams_shots(
-  team_ids = c('1610612744', '1610612747', '1610612755', '1610612742', '1610612760', '1610612757'),
-  seasons = 2023
-)
+#shots <- teams_shots(
+  #team_ids = c('1610612744', '1610612747', '1610612755', '1610612742', '1610612760', '1610612757'),
+  #seasons = 2023
+#)
 
-head(shots)
+# save to csv
+#write.csv(shots,"./data/shots.csv", row.names = FALSE)
+#write.csv(df_dict_nba_teams,"./data/df_dict_nba_teams.csv", row.names = FALSE)
+
+#read shots csv
+player_shots <- read.csv("./data/shots.csv")
+df_dict_nba_teams <- read.csv("./data/df_dict_nba_teams.csv")
+
+
 ```
 
 **Shot Data**: The `nbastatR::teams_shots` function retrieves shot data for selected teams
@@ -124,9 +132,8 @@ This step refines the dataset by:
 
 ```{r}
 # Filter for specific players and scale the x and y coordinates
-shots_player <- shots |>
-  filter(namePlayer %in% c("LeBron James", "Stephen Curry", "Joel Embiid", 
-                           "Luka Dončić", "Damian Lillard", "Shai Gilgeous-Alexander")) |>
+shots_player <- player_shots |>
+  filter(namePlayer %in% c("LeBron James", "Stephen Curry")) |>
   # Scale x and y coordinates (court dimensions adjusted manually)
   mutate(x = (locationX / 10) - 0,
          y = (locationY / 10) - 41.75) |>
@@ -178,19 +185,14 @@ player_stats <- shots_player |>
 
 # Data frame with player images and labels
 images <- data.frame(
-  namePlayer = c("Joel Embiid", "Luka Dončić", "LeBron James", "Stephen Curry", 
-                 "Damian Lillard", "Shai Gilgeous-Alexander"),
-  label = c("Joel Embiid", "Luka Dončić", "LeBron James", "Stephen Curry", 
-            "Damian Lillard", "Shai G-Alexander"),
-  image = c("https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/3059318.png",
-            "https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/3945274.png",
-            "https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/1966.png",
-            "https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/3975.png",
-            "https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/6606.png",
-            "https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/4278073.png")
+  namePlayer = c( "LeBron James", "Stephen Curry"),
+  label = c("LeBron James", "Stephen Curry"),
+  image = c("https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/1966.png",
+            "https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/3975.png")
 ) |>
   left_join(player_stats, by = c("namePlayer" = "name_player")) |>
-  left_join(df_dict_nba_teams|>select(nameTeam,slugTeam), by=c("name_team"="nameTeam"))|>
+  left_join(df_dict_nba_teams|>
+              select(nameTeam,slugTeam), by=c("name_team"="nameTeam"))|>
   mutate(text_label = glue("<span style='font-size:14px;'>**{toupper(label)}**</span><br><span style='font-size:12.5px;color:grey40;'>{slugTeam} · {total} shots · </span><span style='color:#ED254E;font-size:12.5px;'>{round(accuracy,0)}% made</span>")
   )
 
@@ -353,6 +355,8 @@ Then, all elements (shots, player images, labels, and court) are combined into a
     -   Circular player headshots and formatted labels
 
 ```{r}
+shot_chart_draft
+
 #save
 ggsave("nba-shots-draft.png", bg="white" , height=9, width=12, units="in")
 ```
